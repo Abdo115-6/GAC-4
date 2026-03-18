@@ -1,4 +1,4 @@
-package com.test.gac_4.entity;
+package com.test.gac_4.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

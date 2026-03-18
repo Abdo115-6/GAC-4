@@ -1,6 +1,6 @@
-package com.test.gac_4.repo;
+package com.test.gac_4.repositories;
 
-import com.test.gac_4.entity.users;
+import com.test.gac_4.entities.users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
