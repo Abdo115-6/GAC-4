@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DonRepo extends JpaRepository<Don, Integer> {
-    List<Don> findByUserId(Integer userId);
-    List<Don> findByActionChariteId(Integer actionId);
+public interface DonRepo extends JpaRepository<Don, Long> {
+
 }

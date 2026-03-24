@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrganisationRepo extends JpaRepository<Organisation, Integer> {
-    List<Organisation> findByValideTrue(); // lister les organisations validées
+public interface OrganisationRepo extends JpaRepository<Organisation, Long> {
+
 }
