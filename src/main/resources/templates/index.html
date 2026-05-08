@@ -1,0 +1,163 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Dashboard - GAC-4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50">
+    <!-- Navbar -->
+    <div th:replace="fragments/layout :: navbar"></div>
+
+    <div class="flex">
+      <!-- Sidebar -->
+      <div th:replace="fragments/layout :: sidebar"></div>
+
+      <!-- Main content -->
+      <main class="flex-1 p-6">
+        <h1 class="text-3xl font-bold mb-6">Welcome to Charity Marketplace</h1>
+
+        <!-- Featured Actions Grid (Product-like layout) -->
+        <div class="mt-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Featured Causes</h2>
+            <a
+              href="/marketplace"
+              class="text-blue-600 hover:text-blue-700 font-semibold"
+              >View All <i class="fas fa-arrow-right"></i
+            ></a>
+          </div>
+
+          <div
+            id="featured-grid"
+            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          >
+            <!-- Grid will be populated by JavaScript -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="fragments/layout :: footer"></div>
+
+    <script>
+      let allActions = [];
+      let currentActionId = null;
+
+      async function loadDashboard() {
+        try {
+          const response = await fetch("/api/actions/public/active");
+          if (response.ok) {
+            allActions = await response.json();
+            displayFeaturedGrid(allActions.slice(0, 8));
+          }
+        } catch (error) {
+          console.error("Error loading data:", error);
+        }
+      }
+
+      function displayFeaturedGrid(actions) {
+        const grid = document.getElementById("featured-grid");
+        if (actions.length === 0) {
+          grid.innerHTML =
+            '<p class="col-span-4 text-center text-gray-500 py-8">No causes available</p>';
+          return;
+        }
+
+        grid.innerHTML = actions
+          .map(
+            (action) => `
+          <div class="bg-white rounded-lg shadow hover:shadow-xl transition overflow-hidden group">
+            <div class="relative h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
+              <i class="fas fa-heart text-white text-5xl opacity-20"></i>
+              <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                ${action.urgencyLevel || "High"}
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-sm mb-2 line-clamp-2 h-10">${action.title || "Charity"}</h3>
+              <p class="text-gray-600 text-xs mb-2 line-clamp-2">$${action.collectedAmount || 0} / $${action.targetAmount || 0}</p>
+              <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                <div
+                  class="bg-blue-600 h-2 rounded-full transition-all"
+                  style="width: ${
+                    action.targetAmount
+                      ? Math.min(
+                          (action.collectedAmount / action.targetAmount) * 100,
+                          100,
+                        )
+                      : 0
+                  }%"
+                ></div>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  onclick="openDonateModal(${action.id}, '${action.title}')"
+                  class="flex-1 bg-blue-600 text-white py-2 rounded text-sm font-semibold hover:bg-blue-700 transition"
+                >
+                  <i class="fas fa-heart"></i> Donate
+                </button>
+                <button
+                  onclick="viewActionDetails(${action.id})"
+                  class="flex-1 bg-gray-100 text-gray-700 py-2 rounded text-sm hover:bg-gray-200 transition"
+                >
+                  View
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2"><i class="fas fa-users"></i> ${action.participantCount || 0} supporters</p>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function openDonateModal(actionId, actionTitle) {
+        currentActionId = actionId;
+        const amount = prompt(`Donate to: ${actionTitle}\n\nEnter amount ($):`);
+        if (amount && parseFloat(amount) > 0) {
+          submitDonation(parseFloat(amount));
+        }
+      }
+
+      async function submitDonation(amount) {
+        try {
+          const response = await fetch("/api/donations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              actionChariteId: currentActionId,
+              amount: amount,
+              message: "",
+            }),
+          });
+
+          if (response.ok) {
+            alert("🎉 Thank you for your donation!");
+            loadDashboard();
+          } else {
+            alert("Donation failed. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error processing donation");
+        }
+      }
+
+      function viewActionDetails(actionId) {
+        const action = allActions.find((a) => a.id === actionId);
+        if (action) {
+          alert(
+            `${action.title}\n\nOrganization: ${action.organisationName}\nGoal: $${action.targetAmount}\nCollected: $${action.collectedAmount}\nSupporters: ${action.participantCount}`,
+          );
+        }
+      }
+
+      window.addEventListener("load", loadDashboard);
+    </script>
+  </body>
+</html>

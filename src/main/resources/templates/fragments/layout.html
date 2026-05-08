@@ -1,0 +1,55 @@
+<div th:fragment="navbar">
+  <nav
+    class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center"
+  >
+    <h2 class="text-xl font-bold">GAC-4 Charity</h2>
+    <div class="space-x-4">
+      <a th:href="@{/}" class="hover:text-gray-300">Dashboard</a>
+      <a th:href="@{/actions}" class="hover:text-gray-300">Actions</a>
+      <a th:href="@{/organisations}" class="hover:text-gray-300"
+        >Organisations</a
+      >
+      <span
+        th:if="${#authentication != null and #authentication.authenticated}"
+        class="text-gray-300"
+      >
+        Welcome, <span th:text="${#authentication.name}"></span>
+      </span>
+      <a
+        th:if="${#authentication == null or !#authentication.authenticated}"
+        th:href="@{/login}"
+        class="hover:text-gray-300"
+        >Login</a
+      >
+      <a
+        th:if="${#authentication != null and #authentication.authenticated}"
+        th:href="@{/logout}"
+        class="hover:text-gray-300"
+        >Logout</a
+      >
+    </div>
+  </nav>
+</div>
+
+<div th:fragment="sidebar">
+  <aside class="w-64 h-screen bg-slate-900 text-white p-5">
+    <ul class="space-y-4">
+      <li>
+        <a th:href="@{/dashboard}" class="block p-2 rounded hover:bg-slate-700">
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/profile}" class="block p-2 rounded hover:bg-slate-700">
+          Profile
+        </a>
+      </li>
+    </ul>
+  </aside>
+</div>
+
+<div th:fragment="footer">
+  <footer class="bg-slate-800 text-white text-center py-3">
+    © 2026 My App
+  </footer>
+</div>

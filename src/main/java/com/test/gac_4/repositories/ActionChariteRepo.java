@@ -7,5 +7,8 @@ import java.util.List;
 
 @Repository
 public interface ActionChariteRepo extends JpaRepository<ActionCharite, Long> {
-
+    List<ActionCharite> findByOrganisationId(Long organisationId);
+    List<ActionCharite> findByCategory(String category);
+    List<ActionCharite> findByArchivedFalse();
+    List<ActionCharite> findByOrganisationIdAndArchivedFalse(Long organisationId);
 }
