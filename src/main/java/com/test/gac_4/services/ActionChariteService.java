@@ -77,6 +77,12 @@ public class ActionChariteService {
         actionRepo.save(action);
     }
 
+    public void deleteAction(Long id) {
+        ActionCharite action = actionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Action not found"));
+        actionRepo.delete(action);
+    }
+
     public List<ActionChariteDTO> getActionsByOrganisation(Long organisationId) {
         return actionRepo.findByOrganisationIdAndArchivedFalse(organisationId)
                 .stream()

@@ -34,6 +34,12 @@ public class ActionChariteController {
         return ResponseEntity.ok(updated);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAction(@PathVariable Long id) {
+        actionService.deleteAction(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{id}/archive")
     public ResponseEntity<Void> archiveAction(@PathVariable Long id) {
         actionService.archiveAction(id);
