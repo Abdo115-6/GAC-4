@@ -1,163 +1,360 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <title>Dashboard - GAC-4</title>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - GAC Charity</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body class="bg-gray-50">
-    <!-- Navbar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
     <div th:replace="fragments/layout :: navbar"></div>
 
     <div class="flex">
-      <!-- Sidebar -->
-      <div th:replace="fragments/layout :: sidebar"></div>
+        <div th:replace="fragments/layout :: sidebar"></div>
 
-      <!-- Main content -->
-      <main class="flex-1 p-6">
-        <h1 class="text-3xl font-bold mb-6">Welcome to Charity Marketplace</h1>
+        <main class="flex-1 ml-64 p-6">
+            <!-- Welcome -->
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                <p class="text-gray-500">Overview of your charity platform</p>
+            </div>
 
-        <!-- Featured Actions Grid (Product-like layout) -->
-        <div class="mt-8">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Featured Causes</h2>
-            <a
-              href="/marketplace"
-              class="text-blue-600 hover:text-blue-700 font-semibold"
-              >View All <i class="fas fa-arrow-right"></i
-            ></a>
-          </div>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-hand-holding-heart text-blue-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">Total</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800" id="stat-actions">0</div>
+                    <div class="text-sm text-gray-500 mt-1">Active Causes</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-building text-green-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Total</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800" id="stat-orgs">0</div>
+                    <div class="text-sm text-gray-500 mt-1">Organizations</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-donate text-purple-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded">Total</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800" id="stat-donations">$0</div>
+                    <div class="text-sm text-gray-500 mt-1">Donations Collected</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-orange-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded">Total</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800" id="stat-users">0</div>
+                    <div class="text-sm text-gray-500 mt-1">Active Users</div>
+                </div>
+            </div>
 
-          <div
-            id="featured-grid"
-            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            <!-- Grid will be populated by JavaScript -->
-          </div>
-        </div>
-      </main>
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">Quick Actions</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="openAddOrgModal()" class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition text-left">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-plus text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm text-gray-800">Add Organization</div>
+                            <div class="text-xs text-gray-500">Register a new charity org</div>
+                        </div>
+                    </button>
+                    <a href="/marketplace" class="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-left">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shopping-cart text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm text-gray-800">Browse Marketplace</div>
+                            <div class="text-xs text-gray-500">Explore & donate to causes</div>
+                        </div>
+                    </a>
+                    <a href="/organisations" class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition text-left">
+                        <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-list text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm text-gray-800">Manage Orgs</div>
+                            <div class="text-xs text-gray-500">View all organizations</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Recent Donations -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">Recent Donations</h2>
+                        <span class="text-xs text-gray-500" id="donation-count">0 donations</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-gray-500 border-b">
+                                    <th class="pb-3 font-medium">Donor</th>
+                                    <th class="pb-3 font-medium">Amount</th>
+                                    <th class="pb-3 font-medium">Action</th>
+                                    <th class="pb-3 font-medium">Organization</th>
+                                    <th class="pb-3 font-medium">Status</th>
+                                    <th class="pb-3 font-medium">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donations-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Organizations -->
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">Organizations</h2>
+                        <button onclick="openAddOrgModal()" class="text-xs text-blue-600 hover:text-blue-700 font-medium"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                    <div class="space-y-3" id="orgs-list">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Causes / Products -->
+            <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-gray-800">Featured Causes</h2>
+                    <a href="/marketplace" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-grid">
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Footer -->
     <div th:replace="fragments/layout :: footer"></div>
 
+    <!-- Add Organization Modal -->
+    <div id="addOrgModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Add Organization</h3>
+                <button onclick="closeAddOrgModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="addOrgForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                    <input type="text" id="orgName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="orgEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <input type="text" id="orgAddress" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="text" id="orgPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="orgDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                    <input type="url" id="orgWebsite" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                        <i class="fas fa-plus-circle"></i> Create Organization
+                    </button>
+                    <button type="button" onclick="closeAddOrgModal()" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-700">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-      let allActions = [];
-      let currentActionId = null;
+        let allActions = [];
+        let allOrgs = [];
+        let allDonations = [];
 
-      async function loadDashboard() {
-        try {
-          const response = await fetch("/api/actions/public/active");
-          if (response.ok) {
-            allActions = await response.json();
-            displayFeaturedGrid(allActions.slice(0, 8));
-          }
-        } catch (error) {
-          console.error("Error loading data:", error);
+        async function loadDashboard() {
+            try {
+                const [actionsRes, orgsRes, statsRes, donationsRes] = await Promise.all([
+                    fetch("/api/actions/public/active"),
+                    fetch("/api/organisations"),
+                    fetch("/api/actions/public/stats"),
+                    fetch("/api/donations/all")
+                ]);
+
+                if (actionsRes.ok) allActions = await actionsRes.json();
+                if (orgsRes.ok) allOrgs = await orgsRes.json();
+                if (donationsRes.ok) allDonations = await donationsRes.json();
+
+                let stats = { totalActions: 0, activeUsers: 0, totalDonations: 0, myParticipations: 0 };
+                if (statsRes.ok) stats = await statsRes.json();
+
+                updateStats(stats);
+                displayFeaturedGrid(allActions.slice(0, 4));
+                displayDonations(allDonations.slice(0, 10));
+                displayOrgs(allOrgs);
+            } catch (error) {
+                console.error("Error loading dashboard:", error);
+            }
         }
-      }
 
-      function displayFeaturedGrid(actions) {
-        const grid = document.getElementById("featured-grid");
-        if (actions.length === 0) {
-          grid.innerHTML =
-            '<p class="col-span-4 text-center text-gray-500 py-8">No causes available</p>';
-          return;
+        function updateStats(stats) {
+            document.getElementById("stat-actions").textContent = stats.totalActions || 0;
+            document.getElementById("stat-orgs").textContent = allOrgs.length || 0;
+            document.getElementById("stat-donations").textContent = "$" + (stats.totalDonations || 0).toLocaleString();
+            document.getElementById("stat-users").textContent = stats.activeUsers || 0;
         }
 
-        grid.innerHTML = actions
-          .map(
-            (action) => `
-          <div class="bg-white rounded-lg shadow hover:shadow-xl transition overflow-hidden group">
-            <div class="relative h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
-              <i class="fas fa-heart text-white text-5xl opacity-20"></i>
-              <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                ${action.urgencyLevel || "High"}
-              </div>
-            </div>
-            <div class="p-4">
-              <h3 class="font-bold text-sm mb-2 line-clamp-2 h-10">${action.title || "Charity"}</h3>
-              <p class="text-gray-600 text-xs mb-2 line-clamp-2">$${action.collectedAmount || 0} / $${action.targetAmount || 0}</p>
-              <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
-                <div
-                  class="bg-blue-600 h-2 rounded-full transition-all"
-                  style="width: ${
-                    action.targetAmount
-                      ? Math.min(
-                          (action.collectedAmount / action.targetAmount) * 100,
-                          100,
-                        )
-                      : 0
-                  }%"
-                ></div>
-              </div>
-              <div class="flex gap-2">
-                <button
-                  onclick="openDonateModal(${action.id}, '${action.title}')"
-                  class="flex-1 bg-blue-600 text-white py-2 rounded text-sm font-semibold hover:bg-blue-700 transition"
-                >
-                  <i class="fas fa-heart"></i> Donate
-                </button>
-                <button
-                  onclick="viewActionDetails(${action.id})"
-                  class="flex-1 bg-gray-100 text-gray-700 py-2 rounded text-sm hover:bg-gray-200 transition"
-                >
-                  View
-                </button>
-              </div>
-              <p class="text-xs text-gray-500 mt-2"><i class="fas fa-users"></i> ${action.participantCount || 0} supporters</p>
-            </div>
-          </div>
-        `,
-          )
-          .join("");
-      }
-
-      function openDonateModal(actionId, actionTitle) {
-        currentActionId = actionId;
-        const amount = prompt(`Donate to: ${actionTitle}\n\nEnter amount ($):`);
-        if (amount && parseFloat(amount) > 0) {
-          submitDonation(parseFloat(amount));
+        function displayFeaturedGrid(actions) {
+            const grid = document.getElementById("featured-grid");
+            if (actions.length === 0) {
+                grid.innerHTML = '<p class="col-span-4 text-center text-gray-500 py-8">No causes available</p>';
+                return;
+            }
+            grid.innerHTML = actions.map(a => `
+                <div class="group bg-white border rounded-lg overflow-hidden hover:shadow-md transition">
+                    <div class="relative h-36 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                        <i class="fas fa-heart text-white text-4xl opacity-20"></i>
+                        ${a.category ? `<span class="absolute top-2 right-2 bg-white bg-opacity-90 text-blue-600 text-xs px-2 py-1 rounded-full font-medium">${a.category}</span>` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-1 line-clamp-1">${a.titre || 'Charity Action'}</h3>
+                        <p class="text-xs text-gray-500 mb-2">${a.organisationName || 'Organization'}</p>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-semibold text-blue-600">$${(a.montantCollecte || 0).toLocaleString()}</span>
+                            <span class="text-gray-500">Goal: $${(a.objectifMontant || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-3">
+                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${a.objectifMontant ? Math.min((a.montantCollecte / a.objectifMontant) * 100, 100) : 0}%"></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/marketplace" class="flex-1 text-center bg-blue-600 text-white py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition">Donate</a>
+                            <a href="/marketplace" class="flex-1 text-center bg-gray-100 text-gray-600 py-1.5 rounded text-xs hover:bg-gray-200 transition">Details</a>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
         }
-      }
 
-      async function submitDonation(amount) {
-        try {
-          const response = await fetch("/api/donations", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              actionChariteId: currentActionId,
-              amount: amount,
-              message: "",
-            }),
-          });
-
-          if (response.ok) {
-            alert("🎉 Thank you for your donation!");
-            loadDashboard();
-          } else {
-            alert("Donation failed. Please try again.");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          alert("Error processing donation");
+        function displayDonations(donations) {
+            const tbody = document.getElementById("donations-table-body");
+            document.getElementById("donation-count").textContent = allDonations.length + " donations";
+            if (donations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No donations yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = donations.map(d => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 text-gray-800">${d.userName || 'Anonymous'}</td>
+                    <td class="py-3 font-semibold text-green-600">$${(d.montant || 0).toLocaleString()}</td>
+                    <td class="py-3 text-gray-600">${d.actionTitle || 'N/A'}</td>
+                    <td class="py-3 text-gray-600">${d.organisationName || 'N/A'}</td>
+                    <td class="py-3"><span class="px-2 py-1 text-xs font-medium rounded-full ${d.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' : d.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${d.status || 'PENDING'}</span></td>
+                    <td class="py-3 text-gray-500 text-xs">${d.createdAt ? formatDate(d.createdAt) : 'N/A'}</td>
+                </tr>
+            `).join("");
         }
-      }
 
-      function viewActionDetails(actionId) {
-        const action = allActions.find((a) => a.id === actionId);
-        if (action) {
-          alert(
-            `${action.title}\n\nOrganization: ${action.organisationName}\nGoal: $${action.targetAmount}\nCollected: $${action.collectedAmount}\nSupporters: ${action.participantCount}`,
-          );
+        function displayOrgs(orgs) {
+            const list = document.getElementById("orgs-list");
+            if (orgs.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 text-sm text-center py-6">No organizations yet</p>';
+                return;
+            }
+            list.innerHTML = orgs.slice(0, 5).map(o => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-building text-white text-xs"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-800">${o.nom || 'Unknown'}</div>
+                            <div class="text-xs text-gray-500">${o.email || ''}</div>
+                        </div>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full ${o.valide ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${o.valide ? 'Verified' : 'Pending'}</span>
+                </div>
+            `).join("");
         }
-      }
 
-      window.addEventListener("load", loadDashboard);
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString();
+            } catch (e) {
+                return dateStr;
+            }
+        }
+
+        // Add Organization
+        function openAddOrgModal() {
+            document.getElementById("addOrgModal").classList.remove("hidden");
+        }
+        function closeAddOrgModal() {
+            document.getElementById("addOrgModal").classList.add("hidden");
+            document.getElementById("addOrgForm").reset();
+        }
+
+        document.getElementById("addOrgForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const data = {
+                nom: document.getElementById("orgName").value,
+                email: document.getElementById("orgEmail").value,
+                adresse: document.getElementById("orgAddress").value,
+                phone: document.getElementById("orgPhone").value,
+                description: document.getElementById("orgDescription").value,
+                website: document.getElementById("orgWebsite").value
+            };
+            try {
+                const res = await fetch("/api/organisations", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert("Organization created successfully!");
+                    closeAddOrgModal();
+                    loadDashboard();
+                } else {
+                    const err = await res.text();
+                    alert("Error: " + err);
+                }
+            } catch (err) {
+                alert("Error creating organization");
+            }
+        });
+
+        document.getElementById("addOrgModal")?.addEventListener("click", (e) => {
+            if (e.target.id === "addOrgModal") closeAddOrgModal();
+        });
+
+        window.addEventListener("load", loadDashboard);
     </script>
-  </body>
+</body>
 </html>

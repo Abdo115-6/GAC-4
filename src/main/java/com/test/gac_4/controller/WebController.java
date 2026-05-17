@@ -38,6 +38,11 @@ public class WebController {
         return "marketplace";
     }
 
+    @GetMapping("/organisations")
+    public String organisations() {
+        return "organisations";
+    }
+
     @PostMapping("/register")
     public String registerWeb(@Valid @ModelAttribute UserRegistrationDTO dto) {
         try {

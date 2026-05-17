@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>GAC-4 Charity</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>♡ GAC-4 Charity</h2>
+
+    <p class="section-title">MAIN</p>
+    <a th:href="@{/dashboard}" class="active">🏠 Home</a>
+    <a th:href="@{/dashboard}">📊 Dashboard</a>
+
+    <p class="section-title">MANAGE</p>
+    <a th:href="@{/manage-causes}">♡ Manage Causes</a>
+
+    <p class="section-title">EXPLORE</p>
+    <a th:href="@{/organisations}">🏛 Organisations</a>
+
+    <p class="section-title">ACCOUNT</p>
+    <a th:href="@{/profile}">👤 My Profile</a>
+    <a href="#">↩ Logout</a>
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+        <div></div>
+
+        <div class="top-links">
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/organisations}">Organisations</a>
+            <a th:href="@{/profile}">My Profile</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Welcome to Charity Marketplace</h1>
+        <p class="subtitle">Discover amazing organisations and make a difference today.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>25+</h3>
+                <p>Organizations</p>
+            </div>
+            <div class="stat-card">
+                <h3>12K MAD</h3>
+                <p>Total Donations</p>
+            </div>
+            <div class="stat-card">
+                <h3>130+</h3>
+                <p>Volunteers</p>
+            </div>
+        </div>
+
+        <div class="title-row">
+            <h2>🏛 Organisations You Can Support</h2>
+            <input type="text" placeholder="Search organisations...">
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="image food"></div>
+                <h3>Food for All</h3>
+                <p>Providing nutritious meals for families.</p>
+                <div class="buttons">
+                    <button class="details">View Details</button>
+                    <button class="donate">Donate</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image education"></div>
+                <h3>Education for Future</h3>
+                <p>Supporting students and learning programs.</p>
+                <div class="buttons">
+                    <button class="details">View Details</button>
+                    <button class="donate">Donate</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image health"></div>
+                <h3>Health & Care</h3>
+                <p>Medical access and treatments for everyone.</p>
+                <div class="buttons">
+                    <button class="details">View Details</button>
+                    <button class="donate">Donate</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image earth"></div>
+                <h3>Green Earth</h3>
+                <p>Environmental and sustainability projects.</p>
+                <div class="buttons">
+                    <button class="details">View Details</button>
+                    <button class="donate">Donate</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

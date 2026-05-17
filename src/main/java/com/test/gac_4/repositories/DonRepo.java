@@ -14,4 +14,10 @@ public interface DonRepo extends JpaRepository<Don, Long> {
     
     @Query("SELECT SUM(d.montant) FROM Don d WHERE d.action.id = ?1 AND d.status = 'CONFIRMED'")
     Double sumDonationsByActionId(Long actionId);
+
+    @Query("SELECT SUM(d.montant) FROM Don d WHERE d.status = 'CONFIRMED'")
+    Double sumAllConfirmedDonations();
+
+    @Query("SELECT COUNT(d) FROM Don d")
+    long countAllDonations();
 }

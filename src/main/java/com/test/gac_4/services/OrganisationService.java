@@ -90,6 +90,12 @@ public class OrganisationService {
         emailService.sendOrganisationRejectionEmail(org.getEmail(), org.getNom());
     }
 
+    public void deleteOrganisation(Long id) {
+        Organisation org = organisationRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Organization not found"));
+        organisationRepo.delete(org);
+    }
+
     public List<OrganisationDTO> getAllPendingOrganisations() {
         return organisationRepo.findByValideFalse()
                 .stream()

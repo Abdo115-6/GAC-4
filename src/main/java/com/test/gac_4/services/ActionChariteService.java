@@ -6,7 +6,9 @@ import com.test.gac_4.entities.ActionCharite;
 import com.test.gac_4.entities.CategoryEnum;
 import com.test.gac_4.entities.Organisation;
 import com.test.gac_4.repositories.ActionChariteRepo;
+import com.test.gac_4.repositories.DonRepo;
 import com.test.gac_4.repositories.OrganisationRepo;
+import com.test.gac_4.repositories.usersrepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -20,6 +22,12 @@ public class ActionChariteService {
 
     @Autowired
     private OrganisationRepo organisationRepo;
+
+    @Autowired
+    private DonRepo donRepo;
+
+    @Autowired
+    private usersrepo usersRepo;
 
     public ActionChariteDTO createAction(ActionChariteDTO dto) {
         Organisation org = organisationRepo.findById(dto.getOrganisationId())
@@ -100,9 +108,11 @@ public class ActionChariteService {
     }
 
     public StatsDTO getPublicStats() {
-        long totalActions = actionRepo.count();
-        // For now, return basic stats. In a real app, you'd query users and donations tables
-        return new StatsDTO(totalActions, 0, 0.0, 0);
+        long totalActions = actionRepo.countByArchivedFalse();
+        long activeUsers = usersRepo.count();
+        Double totalDonations = donRepo.sumAllConfirmedDonations();
+        long myParticipations = 0;
+        return new StatsDTO(totalActions, activeUsers, totalDonations != null ? totalDonations : 0.0, myParticipations);
     }
 
     private ActionChariteDTO mapToDTO(ActionCharite action) {
@@ -120,6 +130,7 @@ public class ActionChariteService {
         dto.setArchived(action.getArchived());
         dto.setIsActive(action.getIsActive());
         dto.setOrganisationId(action.getOrganisation().getId());
+        dto.setOrganisationName(action.getOrganisation().getNom());
         dto.setParticipantCount(action.getParticipantCount());
         dto.setProgressPercentage(action.getProgressPercentage());
         return dto;

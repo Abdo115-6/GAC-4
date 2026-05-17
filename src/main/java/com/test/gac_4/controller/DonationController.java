@@ -50,4 +50,10 @@ public class DonationController {
         Double total = donService.getTotalDonationsByAction(actionId);
         return ResponseEntity.ok(total);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<DonDTO>> getAllDonations() {
+        List<DonDTO> donations = donService.getAllDonations();
+        return ResponseEntity.ok(donations);
+    }
 }

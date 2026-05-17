@@ -62,4 +62,10 @@ public class OrganisationController {
         organisationService.rejectOrganisation(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrganisation(@PathVariable Long id) {
+        organisationService.deleteOrganisation(id);
+        return ResponseEntity.ok().build();
+    }
 }

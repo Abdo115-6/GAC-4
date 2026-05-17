@@ -9,8 +9,11 @@ import com.test.gac_4.repositories.DonRepo;
 import com.test.gac_4.repositories.ActionChariteRepo;
 import com.test.gac_4.repositories.usersrepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +32,40 @@ public class DonService {
     private EmailService emailService;
 
     public DonDTO createDon(DonDTO dto) {
-        users user = usersRepo.findById(dto.getUserId())
+        Double montant = dto.getMontant() != null ? dto.getMontant() : dto.getAmount();
+        if (montant == null || montant <= 0) {
+            throw new RuntimeException("Valid amount is required");
+        }
+
+        Long actionId = dto.getActionId() != null ? dto.getActionId() : dto.getActionChariteId();
+        if (actionId == null) {
+            throw new RuntimeException("Action ID is required");
+        }
+
+        Long userId = dto.getUserId();
+        if (userId == null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                String email = auth.getName();
+                users user = usersRepo.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                userId = user.getId();
+            } else {
+                throw new RuntimeException("User authentication required");
+            }
+        }
+
+        users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ActionCharite action = actionRepo.findById(dto.getActionId())
+        ActionCharite action = actionRepo.findById(actionId)
                 .orElseThrow(() -> new RuntimeException("Action not found"));
 
         Don don = new Don();
-        don.setMontant(dto.getMontant());
+        don.setMontant(montant);
         don.setStatus(PaymentStatus.PENDING);
-        don.setPaymentMethod(dto.getPaymentMethod());
-        don.setNotes(dto.getNotes());
+        don.setPaymentMethod(dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "CASH");
+        don.setNotes(dto.getNotes() != null ? dto.getNotes() : dto.getMessage());
         don.setUser(user);
         don.setAction(action);
         don.setCreatedAt(LocalDateTime.now());
@@ -67,7 +93,6 @@ public class DonService {
         don.setStatus(PaymentStatus.CONFIRMED);
         Don updated = donRepo.save(don);
 
-        // Update action collected amount
         ActionCharite action = don.getAction();
         Double totalDonations = donRepo.sumDonationsByActionId(action.getId());
         if (totalDonations != null) {
@@ -103,6 +128,12 @@ public class DonService {
         return total != null ? total : 0.0;
     }
 
+    public List<DonDTO> getAllDonations() {
+        return donRepo.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     private DonDTO mapToDTO(Don don) {
         DonDTO dto = new DonDTO();
         dto.setId(don.getId());
@@ -113,6 +144,10 @@ public class DonService {
         dto.setNotes(don.getNotes());
         dto.setUserId(don.getUser().getId());
         dto.setActionId(don.getAction().getId());
+        dto.setUserName(don.getUser().getFirstName() + " " + don.getUser().getLastName());
+        dto.setActionTitle(don.getAction().getTitre());
+        dto.setOrganisationName(don.getAction().getOrganisation().getNom());
+        dto.setCreatedAt(don.getCreatedAt() != null ? don.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null);
         return dto;
     }
 }

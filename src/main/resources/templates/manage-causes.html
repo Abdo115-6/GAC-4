@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Causes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page-center">
+    <div class="manage-box">
+        <h1>Manage Charity Causes</h1>
+
+        <form>
+            <input type="text" placeholder="Cause name">
+            <textarea placeholder="Description"></textarea>
+            <button class="donate">Add Cause</button>
+        </form>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>Food Donation</td>
+                <td><button class="details">Delete</button></td>
+            </tr>
+            <tr>
+                <td>Education Support</td>
+                <td><button class="details">Delete</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

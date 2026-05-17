@@ -1,0 +1,303 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organizations - GAC Charity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
+    <div th:replace="fragments/layout :: navbar"></div>
+
+    <div class="flex">
+        <div th:replace="fragments/layout :: sidebar"></div>
+
+        <main class="flex-1 ml-64 p-6">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Organizations</h1>
+                    <p class="text-gray-500">Manage charity organizations</p>
+                </div>
+                <button onclick="openOrgModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Add Organization
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="text-3xl font-bold text-gray-800" id="total-orgs">0</div>
+                    <div class="text-sm text-gray-500">Total Organizations</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="text-3xl font-bold text-green-600" id="verified-orgs">0</div>
+                    <div class="text-sm text-gray-500">Verified</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <div class="text-3xl font-bold text-yellow-600" id="pending-orgs">0</div>
+                    <div class="text-sm text-gray-500">Pending Approval</div>
+                </div>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="bg-white rounded-xl shadow-sm border p-4 mb-6">
+                <div class="flex gap-3">
+                    <div class="flex-1 relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchOrg" placeholder="Search organizations..." oninput="filterOrgs()" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <select id="statusFilter" onchange="filterOrgs()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">All Status</option>
+                        <option value="true">Verified</option>
+                        <option value="false">Pending</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Organizations Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="orgs-grid">
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="fragments/layout :: footer"></div>
+
+    <!-- Add/Edit Organization Modal -->
+    <div id="orgModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-800" id="orgModalTitle">Add Organization</h3>
+                <button onclick="closeOrgModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="orgForm" class="space-y-4">
+                <input type="hidden" id="editOrgId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
+                    <input type="text" id="orgName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input type="email" id="orgEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                    <input type="text" id="orgAddress" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="text" id="orgPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tax ID</label>
+                    <input type="text" id="orgTaxId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="orgDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                    <input type="url" id="orgWebsite" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                        <i class="fas fa-save"></i> <span id="submitBtnText">Create</span>
+                    </button>
+                    <button type="button" onclick="closeOrgModal()" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-700">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-8 max-w-sm w-full mx-4 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Delete Organization</h3>
+            <p class="text-gray-500 mb-6">Are you sure? This action cannot be undone.</p>
+            <input type="hidden" id="deleteOrgId">
+            <div class="flex gap-3">
+                <button onclick="confirmDelete()" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition font-medium">Delete</button>
+                <button onclick="closeDeleteModal()" class="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allOrgs = [];
+
+        async function loadOrgs() {
+            try {
+                const res = await fetch("/api/organisations");
+                if (res.ok) {
+                    allOrgs = await res.json();
+                    updateStats();
+                    renderOrgs(allOrgs);
+                }
+            } catch (e) {
+                console.error("Error loading orgs:", e);
+            }
+        }
+
+        function updateStats() {
+            const total = allOrgs.length;
+            const verified = allOrgs.filter(o => o.valide).length;
+            const pending = allOrgs.filter(o => !o.valide).length;
+            document.getElementById("total-orgs").textContent = total;
+            document.getElementById("verified-orgs").textContent = verified;
+            document.getElementById("pending-orgs").textContent = pending;
+        }
+
+        function renderOrgs(orgs) {
+            const grid = document.getElementById("orgs-grid");
+            if (orgs.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12"><i class="fas fa-building text-4xl text-gray-300 mb-3"></i><p class="text-gray-500">No organizations yet</p><button onclick="openOrgModal()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Add One</button></div>';
+                return;
+            }
+            grid.innerHTML = orgs.map(o => `
+                <div class="bg-white rounded-xl shadow-sm border p-6 hover:shadow-md transition">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-building text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">${o.nom || 'Unknown'}</h3>
+                                <span class="text-xs px-2 py-0.5 rounded-full ${o.valide ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${o.valide ? 'Verified' : 'Pending'}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editOrg(${o.id})" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="openDeleteModal(${o.id})" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        ${o.email ? `<p><i class="fas fa-envelope w-4 text-gray-400"></i> ${o.email}</p>` : ''}
+                        ${o.phone ? `<p><i class="fas fa-phone w-4 text-gray-400"></i> ${o.phone}</p>` : ''}
+                        ${o.adresse ? `<p><i class="fas fa-map-marker-alt w-4 text-gray-400"></i> ${o.adresse}</p>` : ''}
+                        ${o.description ? `<p class="text-gray-500 line-clamp-2">${o.description}</p>` : ''}
+                        ${o.website ? `<a href="${o.website}" target="_blank" class="text-blue-600 hover:underline block"><i class="fas fa-globe w-4"></i> ${o.website}</a>` : ''}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function filterOrgs() {
+            const query = document.getElementById("searchOrg").value.toLowerCase();
+            const status = document.getElementById("statusFilter").value;
+            const filtered = allOrgs.filter(o => {
+                if (query && !(o.nom && o.nom.toLowerCase().includes(query)) && !(o.email && o.email.toLowerCase().includes(query))) return false;
+                if (status !== '' && (o.valide === undefined || o.valide.toString() !== status)) return false;
+                return true;
+            });
+            renderOrgs(filtered);
+        }
+
+        // CRUD Operations
+        function openOrgModal() {
+            document.getElementById("orgModalTitle").textContent = "Add Organization";
+            document.getElementById("submitBtnText").textContent = "Create";
+            document.getElementById("editOrgId").value = "";
+            document.getElementById("orgForm").reset();
+            document.getElementById("orgModal").classList.remove("hidden");
+        }
+
+        function closeOrgModal() {
+            document.getElementById("orgModal").classList.add("hidden");
+        }
+
+        document.getElementById("orgForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById("editOrgId").value;
+            const data = {
+                nom: document.getElementById("orgName").value,
+                email: document.getElementById("orgEmail").value,
+                adresse: document.getElementById("orgAddress").value,
+                phone: document.getElementById("orgPhone").value,
+                taxId: document.getElementById("orgTaxId").value,
+                description: document.getElementById("orgDescription").value,
+                website: document.getElementById("orgWebsite").value
+            };
+
+            try {
+                const url = editId ? `/api/organisations/${editId}` : "/api/organisations";
+                const method = editId ? "PUT" : "POST";
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert(editId ? "Organization updated!" : "Organization created!");
+                    closeOrgModal();
+                    loadOrgs();
+                } else {
+                    const err = await res.text();
+                    alert("Error: " + err);
+                }
+            } catch (e) {
+                alert("Error saving organization");
+            }
+        });
+
+        async function editOrg(id) {
+            try {
+                const res = await fetch(`/api/organisations/${id}`);
+                if (res.ok) {
+                    const o = await res.json();
+                    document.getElementById("orgModalTitle").textContent = "Edit Organization";
+                    document.getElementById("submitBtnText").textContent = "Update";
+                    document.getElementById("editOrgId").value = o.id;
+                    document.getElementById("orgName").value = o.nom || '';
+                    document.getElementById("orgEmail").value = o.email || '';
+                    document.getElementById("orgAddress").value = o.adresse || '';
+                    document.getElementById("orgPhone").value = o.phone || '';
+                    document.getElementById("orgTaxId").value = o.taxId || '';
+                    document.getElementById("orgDescription").value = o.description || '';
+                    document.getElementById("orgWebsite").value = o.website || '';
+                    document.getElementById("orgModal").classList.remove("hidden");
+                }
+            } catch (e) {
+                alert("Error loading organization");
+            }
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById("deleteOrgId").value = id;
+            document.getElementById("deleteModal").classList.remove("hidden");
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("deleteModal").classList.add("hidden");
+        }
+
+        async function confirmDelete() {
+            const id = document.getElementById("deleteOrgId").value;
+            try {
+                const res = await fetch(`/api/organisations/${id}`, { method: "DELETE" });
+                if (res.ok) {
+                    alert("Organization deleted!");
+                    closeDeleteModal();
+                    loadOrgs();
+                } else {
+                    alert("Error deleting organization");
+                }
+            } catch (e) {
+                alert("Error deleting organization");
+            }
+        }
+
+        document.getElementById("orgModal")?.addEventListener("click", e => { if (e.target.id === "orgModal") closeOrgModal(); });
+        document.getElementById("deleteModal")?.addEventListener("click", e => { if (e.target.id === "deleteModal") closeDeleteModal(); });
+
+        window.addEventListener("load", loadOrgs);
+    </script>
+</body>
+</html>

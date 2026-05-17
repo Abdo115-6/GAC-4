@@ -39,4 +39,5 @@ public class ActionChariteDTO {
 
     private Long participantCount;
     private Double progressPercentage;
+    private String organisationName;
 }
