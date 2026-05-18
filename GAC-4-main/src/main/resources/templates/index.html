@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head">
+  <title>GAC-4 | Dashboard</title>
+</head>
+<body class="bg-slate-50">
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<main class="max-w-7xl mx-auto px-4 py-10">
+  <div class="bg-white rounded-[2.5rem] p-10 mb-12 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-10">
+    <div class="flex-1 text-center md:text-left">
+      <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">Impact 2026</span>
+      <h1 class="text-5xl font-black text-slate-900 leading-tight mb-6">Changez des vies,<br><span class="text-blue-600">Action par Action.</span></h1>
+      <p class="text-slate-500 text-lg mb-8">Rejoignez une communauté de donateurs engagés pour un changement réel et transparent.</p>
+      <div class="flex gap-4 justify-center md:justify-start">
+        <a href="/marketplace" class="btn-primary px-8 py-4 rounded-2xl font-bold text-lg">Explorer les causes</a>
+        <button class="bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-slate-50">Comment ça marche ?</button>
+      </div>
+    </div>
+    <div class="flex-1 grid grid-cols-2 gap-4">
+      <div class="bg-blue-50 p-6 rounded-3xl text-center">
+        <h3 id="stat-actions" class="text-3xl font-black text-blue-600">0</h3>
+        <p class="text-slate-600 font-medium">Actions</p>
+      </div>
+      <div class="bg-emerald-50 p-6 rounded-3xl text-center">
+        <h3 id="stat-donated" class="text-3xl font-black text-emerald-600">$0</h3>
+        <p class="text-slate-600 font-medium">Récoltés</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+    <i class="fas fa-fire text-orange-500"></i> Causes en vedette
+  </h2>
+
+  <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+  </div>
+</main>
+
+<script th:inline="javascript">
+  async function loadContent() {
+      try {
+          // Chargement des actions
+          const res = await fetch('/api/actions/public/active');
+          const actions = await res.json();
+
+          // Chargement des stats (depuis ton StatsDTO)
+          const statsRes = await fetch('/api/actions/public/stats');
+          const stats = await statsRes.json();
+
+          document.getElementById('stat-actions').innerText = stats.totalActions || 0;
+          document.getElementById('stat-donated').innerText = `$${stats.totalDonations || 0}`;
+
+          const grid = document.getElementById('featured-grid');
+          grid.innerHTML = actions.slice(0, 8).map(action => renderCard(action)).join('');
+      } catch (e) { console.error("Erreur de chargement", e); }
+  }
+
+  function renderCard(action) {
+      const progress = action.targetAmount ? Math.min((action.collectedAmount / action.targetAmount) * 100, 100) : 0;
+      return `
+          <div class="bg-white rounded-3xl p-5 action-card group">
+              <div class="relative h-44 rounded-2xl bg-slate-100 mb-5 flex items-center justify-center overflow-hidden">
+                  <i class="fas fa-parachute-box text-slate-300 text-5xl group-hover:scale-110 transition-transform duration-500"></i>
+                  <div class="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">
+                      ${action.urgencyLevel || 'Urgent'}
+                  </div>
+              </div>
+              <h3 class="font-bold text-slate-900 text-lg mb-2 line-clamp-1">${action.title}</h3>
+              <div class="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">
+                  <span>${action.collectedAmount} € collectés</span>
+                  <span>Objectif: ${action.targetAmount} €</span>
+              </div>
+              <div class="progress-container mb-6">
+                  <div class="progress-fill" style="width: ${progress}%"></div>
+              </div>
+              <button onclick="window.location.href='/marketplace'" class="w-full btn-primary py-3.5 rounded-2xl font-bold text-sm">
+                  Soutenir la cause
+              </button>
+          </div>
+      `;
+  }
+
+  window.onload = loadContent;
+</script>
+</body>
+</html>
